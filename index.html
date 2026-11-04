@@ -1,0 +1,117 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WORLD TOOLS | Free Online Tools</title>
+<meta name="description" content="Free online calculators and useful tools for everyone.">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0b1020;color:#f1f5ff;font-family:Arial,sans-serif}
+header{text-align:center;padding:35px 15px;background:#142441}
+h1{font-size:38px;color:#60d8db;margin:5px}
+p{color:#b9c7dc}
+main{max-width:850px;margin:25px auto;padding:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px}
+.card{background:#182744;border:1px solid #304565;border-radius:14px;padding:18px}
+input,textarea,button{width:100%;padding:12px;margin:7px 0;border-radius:8px;border:1px solid #536987;font-size:16px}
+input,textarea{background:#0c1730;color:white}
+button{background:#42d3c5;color:#071523;font-weight:bold;cursor:pointer;border:0}
+.result{color:#69e4ce;overflow-wrap:anywhere}
+#tools{margin-top:20px;background:#182744;padding:20px;border-radius:14px}
+footer{text-align:center;padding:30px;color:#aabbd2}
+</style>
+</head>
+<body>
+<header>
+<h1>WORLD TOOLS 🌍</h1>
+<p>Free online tools for everyone, everywhere.</p>
+</header>
+<main>
+<h2>Explore Free Tools</h2>
+<div class="grid">
+<div class="card"><h3>Percentage Calculator</h3><button onclick="show('Percentage', 'value','total')">Open</button></div>
+<div class="card"><h3>Discount Calculator</h3><button onclick="show('Discount','price','discount')">Open</button></div>
+<div class="card"><h3>Age Calculator</h3><button onclick="age()">Open</button></div>
+<div class="card"><h3>Word Counter</h3><button onclick="words()">Open</button></div>
+<div class="card"><h3>Unit Converter</h3><button onclick="units()">Open</button></div>
+<div class="card"><h3>Simple Interest</h3><button onclick="interest()">Open</button></div>
+<div class="card"><h3>Password Generator</h3><button onclick="password()">Open</button></div>
+<div class="card"><h3>Adult BMI Calculator</h3><button onclick="bmi()">Open</button></div>
+</div>
+<section id="tools" hidden>
+<h2 id="heading">Tool</h2>
+<div id="fields"></div>
+<button id="calculate">Calculate</button>
+<p class="result" id="result"></p>
+<button onclick="closeTool()">Close Tool</button>
+</section>
+</main>
+<footer>
+WORLD TOOLS © 2026<br>
+Free tools. Simple solutions. Worldwide.
+</footer>
+<script>
+const $=id=>document.getElementById(id);
+function open(title,fields,fn){
+$('tools').hidden=false;$('heading').textContent=title;
+$('fields').innerHTML=fields;$('result').textContent='';
+$('calculate').onclick=fn;
+$('tools').scrollIntoView({behavior:'smooth'});
+}
+function field(id,label,type='number'){
+return `<label>${label}</label><input id="${id}" type="${type}" required>`;
+}
+function val(id){return Number($(id).value)}
+function show(title,a,b){
+open(title,field(a,a)+field(b,b),()=>{
+let x=val(a),y=val(b);
+$('result').textContent= !$(a).value||!$(b).value||y===0?'Enter valid values':title==='Percentage'? (x/y*100).toFixed(2)+'%':'Savings: '+(x*y/100).toFixed(2)+' | Final price: '+(x-x*y/100).toFixed(2);
+});
+}
+function age(){
+open('Age Calculator',field('dob','Date of birth','date'),()=>{
+let d=new Date($('dob').value),n=new Date();
+if(!$('dob').value||d>n){$('result').textContent='Enter a valid past date';return}
+let a=n.getFullYear()-d.getFullYear();
+if(n.getMonth()<d.getMonth()||(n.getMonth()===d.getMonth()&&n.getDate()<d.getDate()))a--;
+$('result').textContent='Age: '+a+' years';
+});
+}
+function words(){
+open('Word Counter','<textarea id="txt" rows="5" placeholder="Type your text"></textarea>',()=>{
+let t=$('txt').value.trim();
+$('result').textContent=(t?t.split(/\s+/).length:0)+' words | '+$('txt').value.length+' characters';
+});
+}
+function units(){
+open('Unit Converter',field('number','Enter value')+'<select id="unit"><option value="1.60934">Miles to KM</option><option value="0.621371">KM to Miles</option><option value="2.20462">KG to Pounds</option><option value="0.453592">Pounds to KG</option></select>',()=>{
+$('result').textContent=($('number').value*val('unit')).toFixed(3);
+});
+}
+function interest(){
+open('Simple Interest',field('p','Principal')+field('r','Annual interest rate (%)')+field('t','Time in years'),()=>{
+let p=val('p'),r=val('r'),t=val('t');
+$('result').textContent=[$('p').value,$('r').value,$('t').value].some(x=>x==='')||p<0||r<0||t<0?'Enter valid values':'Interest: '+(p*r*t/100).toFixed(2)+' | Total: '+(p+p*r*t/100).toFixed(2);
+});
+}
+function password(){
+open('Password Generator',field('len','Password length (8–40)'),()=>{
+let n=val('len');
+if(!Number.isInteger(n)||n<8||n>40){$('result').textContent='Choose 8 to 40';return}
+let chars='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%';
+let a=new Uint32Array(n);crypto.getRandomValues(a);
+$('result').textContent=Array.from(a,x=>chars[x%chars.length]).join('');
+});
+}
+function bmi(){
+open('Adult BMI Calculator',field('w','Weight in kg')+field('h','Height in cm'),()=>{
+let w=val('w'),h=val('h')/100;
+$('result').textContent=!w||!h||w<1||h<=0?'Enter valid values':'Adult BMI: '+(w/(h*h)).toFixed(2)+'. Not for people under 18.';
+});
+}
+function closeTool(){$('tools').hidden=true}
+</script>
+</body>
+</html>
